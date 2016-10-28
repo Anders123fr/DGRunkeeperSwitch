@@ -13,7 +13,7 @@ import UIKit
 open class DGRunkeeperSwitchRoundedLayer: CALayer {
 
     override open var bounds: CGRect {
-        didSet { cornerRadius = bounds.height / 2.0 }
+		didSet { cornerRadius = self.cornerRadius }
     }
     
 }
@@ -64,7 +64,18 @@ open class DGRunkeeperSwitch: UIControl {
         set { selectedBackgroundView.backgroundColor = newValue }
         get { return selectedBackgroundView.backgroundColor }
     }
-    
+	
+	@IBInspectable
+	// Set a custom corner radius or use the default
+	open var customCornerRadius: CGFloat? {
+		didSet {
+			guard let customCornerRadius = self.customCornerRadius else { return }
+			
+			self.layer.cornerRadius = customCornerRadius
+			selectedBackgroundView.layer.cornerRadius = customCornerRadius
+		}
+	}
+	
     @IBInspectable
     open var titleColor: UIColor! {
         didSet { titleLabels.forEach { $0.textColor = titleColor } }
@@ -160,6 +171,9 @@ open class DGRunkeeperSwitch: UIControl {
         addGestureRecognizer(panGesture)
         
         addObserver(self, forKeyPath: "selectedBackgroundView.frame", options: .new, context: nil)
+		
+		// Set default corner radius
+		customCornerRadius = bounds.height / 2.0
     }
     
     override open func awakeFromNib() {
